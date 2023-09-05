@@ -1,6 +1,10 @@
 # Análise de Especificações de Computador em PowerShell
 Este script PowerShell avalia várias especificações e configurações de um computador Windows e determina seu status com base em critérios definidos.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/pigor12/computerevaluation/main/Print.png"/>
+</p>
+
 ## Funcionalidades
 * Verifica o nome e a versão do sistema operacional.
 * Avalia a geração e a marca do processador.

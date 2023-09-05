@@ -3,7 +3,7 @@ Clear-Host
 $OSINFO = Get-WmiObject -Class Win32_OperatingSystem
 $OSNAME = ($OSINFO).Caption
 If ($OSNAME -Match "10" -Or "11") {
-    IF ($OSNAME -Match "Pro" -Or "Enterprise" -Or "Iot") {
+    IF ($OSNAME -Match "Pro" -Or $OSNAME -Match "Enterprise" -Or $OSNAME -Match "Iot") {
         $OSSTATUS = "OK"
     } Else {
         $OSSTATUS = "Out of compliance"
@@ -19,12 +19,12 @@ If ($OSARCHITECTURE -Match "64 bits") {
 }
 $CPU = Get-WmiObject Win32_Processor
 $CPUNAME = $CPU.Name
-If ($cpuName -match "AMD" -and $cpuName -match "Ryzen") {
+If ($CPUNAME -Match "AMD" -and $CPUNAME -Match "Ryzen") {
     $CPUStatus = "OK"
-} ElseIf ($cpuName -match "Intel") {
-    if ($cpuName -match "Core" -and ($cpuName -match "i[3-9]-[8-9][0-9]{2,3}" -or $cpuName -match "i[3-9]-[1-9][0-9]{3,4}")) {
+} ElseIf ($CPUNAME -Match "Intel") {
+    if ($CPUNAME -Match "Core" -and ($CPUNAME -Match "i[3-9]-[8-9][0-9]{2,3}" -or $CPUNAME -Match "i[3-9]-[1-9][0-9]{3,4}")) {
         $CPUStatus = "OK"
-    } ElseIf ($cpuName -match "Xeon") {
+    } ElseIf ($CPUNAME -Match "Xeon") {
         $CPUStatus = "OK"
     } Else {
         $CPUStatus = "Disposal"
@@ -47,10 +47,11 @@ If ($N_USERS -ge 6) {
 }
 $NETWORKINFO = Get-WmiObject Win32_NetworkAdapterConfiguration | Where-Object { $_.IPAddress }
 $DOMAIN = $NETWORKINFO.DNSDomain
-If ([string]::IsNullOrEmpty($DOMAIN)) {
-    $NETWORKSTATUS = "Disconnected"
-} Else {
+If ($DOMAIN) {
     $NETWORKSTATUS = "OK"
+} Else {
+    $DOMAIN = "No domains found"
+    $NETWORKSTATUS = "Out of compliance"
 }
 $DISK = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='$Env:HOMEDRIVE'"
 $PERCENTFREE = ($DISK.FreeSpace / $DISK.Size) * 100
@@ -71,7 +72,7 @@ If ($GPUNAME -Like "*Intel*") {
     $GPUStatus = "OK"
 } ElseIf ($GPUNAME -like "*ATI*") {
     $GPUStatus = "Recommended upgrade"
-} Elseif ($GPUNAME -Like "*NVIDIA*" -Or $GPUNAME -like "*AMD*") {
+} ElseIf ($GPUNAME -Like "*GeForce*" -Or $GPUNAME -like "*Radeon*") {
     $GPUStatus = "OK"
 } Else {
     $GPUStatus = "Unknown"
@@ -82,6 +83,7 @@ $AVNAME = $HASKASPERSKY.DisplayName
 If ($HASKASPERSKY) {
     $AVSTATUS = "OK"
 } Else {
+    $AVNAME = "Not available"
     $AVSTATUS = "Out of compliance"
 }
 $UPTIME = (Get-Date) - ($OSINFO.ConvertToDateTime($OSINFO.LastBootupTime))
